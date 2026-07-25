@@ -1,0 +1,17 @@
+[
+  {
+    "datum": "2026-07-20",
+    "de": "Dies ist der neueste Eintrag. Er steht ganz oben.\n\nAbsätze trennt man mit einer Leerzeile.",
+    "en": "This is the most recent entry. It sits at the very top.\n\nParagraphs are separated by a blank line."
+  },
+  {
+    "datum": "2026-07-18",
+    "de": "Ein zweiter Beispiel-Eintrag. Die Suche oben rechts filtert alle Einträge nach einem Stichwort.",
+    "en": "A second sample entry. The search at the top right filters all entries by keyword."
+  },
+  {
+    "datum": "2026-07-15",
+    "de": "Der allererste Eintrag. Er steht zuunterst — der Anfang von allem.",
+    "en": "The very first entry. It sits at the bottom — the beginning of everything."
+  }
+]
