@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASM — Tagebuch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --papier: #FBF8F1;
+    --tinte: #110F0C;
+    --tinte-leicht: #6b6558;
+    --linie: #e3ddcf;
+    --marker: #f3e6ae;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { background: var(--papier); }
+
+  body {
+    font-family: "Baskerville Old Face", Baskerville, "Libre Baskerville", "Times New Roman", serif;
+    color: var(--tinte);
+    background: var(--papier);
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  /* ---------- Kopf ---------- */
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 2rem 2.25rem 0;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .logo img {
+    height: 52px;
+    width: auto;
+    display: block;
+  }
+
+  /* Der Schreib-Cursor aus dem Original-Screenshot */
+  .logo .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 46px;
+    margin-left: 6px;
+    background: var(--tinte);
+    animation: blink 1.1s steps(1) infinite;
+  }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .logo .cursor { animation: none; }
+  }
+
+  /* ---------- Suche ---------- */
+  .suche {
+    margin-top: 0.8rem;
+  }
+
+  .suche input {
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--tinte);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--tinte);
+    padding: 0.3rem 0.1rem;
+    width: min(260px, 60vw);
+    outline: none;
+  }
+
+  .suche input::placeholder {
+    color: var(--tinte-leicht);
+    font-style: italic;
+  }
+
+  .suche input:focus {
+    border-bottom-width: 2px;
+  }
+
+  .such-status {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--tinte-leicht);
+    margin-top: 0.35rem;
+    min-height: 1.2em;
+    text-align: right;
+  }
+
+  /* ---------- Einträge ---------- */
+  main {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 4.5rem 1.5rem 6rem;
+  }
+
+  .eintrag {
+    padding: 2.2rem 0;
+    border-bottom: 1px solid var(--linie);
+  }
+
+  .eintrag:first-child { padding-top: 0; }
+  .eintrag:last-child { border-bottom: none; }
+
+  .eintrag time {
+    display: block;
+    font-size: 0.85rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--tinte-leicht);
+    margin-bottom: 0.8rem;
+  }
+
+  .eintrag p {
+    font-size: 1.08rem;
+    margin-bottom: 1em;
+  }
+
+  .eintrag p:last-child { margin-bottom: 0; }
+
+  mark {
+    background: var(--marker);
+    color: inherit;
+    padding: 0 0.1em;
+  }
+
+  .leer {
+    text-align: center;
+    font-style: italic;
+    color: var(--tinte-leicht);
+    padding: 3rem 0;
+  }
+
+  @media (max-width: 560px) {
+    header { padding: 1.4rem 1.25rem 0; }
+    .logo img { height: 42px; }
+    .logo .cursor { height: 37px; }
+    main { padding-top: 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="#" aria-label="ASM — zum Anfang" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
+    <img src="data:image/png;base64,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" alt="ASM">
+    <span class="cursor" aria-hidden="true"></span>
+  </a>
+  <div class="suche">
+    <input type="search" id="suchfeld" placeholder="Stichwort suchen …" autocomplete="off" aria-label="Einträge durchsuchen">
+    <div class="such-status" id="suchStatus" aria-live="polite"></div>
+  </div>
+</header>
+
+<main id="einträge"></main>
+
+<script>
+/* =====================================================================
+   EINTRÄGE
+   Neuen Eintrag immer GANZ OBEN in diese Liste einfügen.
+   Format:
+     { datum: "JJJJ-MM-TT", text: "Dein Text." }
+   Absätze innerhalb eines Eintrags mit \n\n trennen.
+   ===================================================================== */
+const EINTRAEGE = [
+  /* ▼ NEUER EINTRAG HIER ▼ */
+  {
+    datum: "2026-07-20",
+    text: "Dies ist der neueste Eintrag. Er steht ganz oben, weil er in der Liste im Code an erster Stelle steht.\n\nAbsätze trennt man mit einer Leerzeile im Code."
+  },
+  {
+    datum: "2026-07-18",
+    text: "Ein zweiter Beispiel-Eintrag. Die Suche oben rechts filtert alle Einträge nach einem Stichwort — probier zum Beispiel das Wort Anfang."
+  },
+  {
+    datum: "2026-07-15",
+    text: "Der allererste Eintrag. Er steht zuunterst — der Anfang von allem."
+  }
+];
+
+/* ---------- Ab hier nichts ändern ---------- */
+
+const MONATE = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+
+function datumFormat(iso) {
+  const [j, m, t] = iso.split("-").map(Number);
+  return `${t}. ${MONATE[m - 1]} ${j}`;
+}
+
+function escapeHTML(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function hervorheben(text, begriff) {
+  if (!begriff) return text;
+  const sicher = begriff.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return text.replace(new RegExp(`(${sicher})`, "gi"), "<mark>$1</mark>");
+}
+
+function rendern(begriff = "") {
+  const main = document.getElementById("einträge");
+  const status = document.getElementById("suchStatus");
+  const b = begriff.trim().toLowerCase();
+
+  const treffer = b
+    ? EINTRAEGE.filter(e => e.text.toLowerCase().includes(b) || datumFormat(e.datum).toLowerCase().includes(b))
+    : EINTRAEGE;
+
+  if (treffer.length === 0) {
+    main.innerHTML = `<div class="leer">Kein Eintrag enthält „${escapeHTML(begriff.trim())}“.</div>`;
+  } else {
+    main.innerHTML = treffer.map(e => {
+      const absaetze = e.text.split(/\n\s*\n/).map(a =>
+        `<p>${hervorheben(escapeHTML(a), b ? begriff.trim() : "")}</p>`
+      ).join("");
+      return `<article class="eintrag">
+        <time datetime="${e.datum}">${datumFormat(e.datum)}</time>
+        ${absaetze}
+      </article>`;
+    }).join("");
+  }
+
+  if (b) {
+    status.textContent = treffer.length === 1 ? "1 Eintrag gefunden" : `${treffer.length} Einträge gefunden`;
+  } else {
+    status.textContent = "";
+  }
+}
+
+const feld = document.getElementById("suchfeld");
+feld.addEventListener("input", () => rendern(feld.value));
+feld.addEventListener("keydown", e => {
+  if (e.key === "Escape") { feld.value = ""; rendern(); feld.blur(); }
+});
+
+rendern();
+</script>
+
+</body>
+</html>
